@@ -2,6 +2,12 @@
 
 AI-Powered Climate Resilient Agriculture Planning for Farmers
 
+## 🚀 Quick Deploy
+
+[![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https://github.com/shreyash0216/gra-prototype)
+
+**Live Demo**: [Coming Soon - Deploy to get your URL]
+
 ## Overview
 
 This system helps farmers create comprehensive climate adaptation plans using AI analysis. It provides:
