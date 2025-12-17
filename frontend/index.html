@@ -93,11 +93,21 @@
             border-radius: 8px;
             font-size: 14px;
             transition: border-color 0.3s;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
         }
         
         input:focus, select:focus, textarea:focus {
             outline: none;
             border-color: #4CAF50;
+        }
+        
+        textarea {
+            resize: vertical;
+        }
+        
+        small {
+            display: block;
+            margin-top: 5px;
         }
         
         .btn {
@@ -796,32 +806,38 @@
 
                     <div className="form-group">
                         <label>Current Crops (comma-separated)</label>
-                        <input
-                            type="text"
+                        <textarea
                             value={formData.current_crops.join(', ')}
                             onChange={(e) => onArrayChange('current_crops', e.target.value)}
                             placeholder="e.g., rice, wheat, cotton"
+                            rows="2"
+                            style={{minHeight: '60px'}}
                         />
+                        <small style={{color: '#666', fontSize: '12px'}}>Separate multiple crops with commas</small>
                     </div>
 
                     <div className="form-group">
                         <label>Climate Concerns (comma-separated)</label>
-                        <input
-                            type="text"
+                        <textarea
                             value={formData.climate_concerns.join(', ')}
                             onChange={(e) => onArrayChange('climate_concerns', e.target.value)}
                             placeholder="e.g., drought, irregular rainfall, heat waves"
+                            rows="2"
+                            style={{minHeight: '60px'}}
                         />
+                        <small style={{color: '#666', fontSize: '12px'}}>Separate multiple concerns with commas</small>
                     </div>
 
                     <div className="form-group">
                         <label>Adaptation Goals (comma-separated)</label>
-                        <input
-                            type="text"
+                        <textarea
                             value={formData.adaptation_goals.join(', ')}
                             onChange={(e) => onArrayChange('adaptation_goals', e.target.value)}
                             placeholder="e.g., increase yield, reduce water usage, improve soil health"
+                            rows="2"
+                            style={{minHeight: '60px'}}
                         />
+                        <small style={{color: '#666', fontSize: '12px'}}>Separate multiple goals with commas</small>
                     </div>
 
                     {error && (
