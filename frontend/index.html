@@ -3,7 +3,10 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>GRA Prototype</title>
+    <title>Climate Adaptation System</title>
+    <script src="https://unpkg.com/react@18/umd/react.development.js"></script>
+    <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
     <style>
         * {
             margin: 0;
@@ -13,70 +16,67 @@
         
         body {
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: linear-gradient(135deg, #4CAF50 0%, #2E7D32 100%);
             min-height: 100vh;
-            padding: 20px;
+            color: #333;
         }
         
         .container {
-            max-width: 1200px;
+            max-width: 1400px;
             margin: 0 auto;
-            background: white;
-            border-radius: 12px;
-            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
-            overflow: hidden;
+            padding: 20px;
         }
         
         .header {
-            background: #2c3e50;
-            color: white;
+            background: white;
+            border-radius: 12px;
             padding: 30px;
             text-align: center;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
         }
         
         .header h1 {
             font-size: 2.5em;
+            color: #2E7D32;
             margin-bottom: 10px;
         }
         
         .header p {
-            opacity: 0.8;
-            font-size: 1.1em;
-        }
-        
-        .status-bar {
-            background: #3498db;
-            color: white;
-            padding: 10px 30px;
-            text-align: center;
-            font-size: 14px;
+            color: #666;
+            font-size: 1.2em;
         }
         
         .main-content {
             display: grid;
             grid-template-columns: 1fr 1fr;
-            gap: 0;
-            min-height: 600px;
-        }
-        
-        .query-section, .simulation-section {
-            padding: 30px;
-        }
-        
-        .query-section {
-            border-right: 1px solid #eee;
-        }
-        
-        .section-title {
-            font-size: 1.5em;
+            gap: 20px;
             margin-bottom: 20px;
-            color: #2c3e50;
-            border-bottom: 2px solid #3498db;
+        }
+        
+        .card {
+            background: white;
+            border-radius: 12px;
+            padding: 30px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+        }
+        
+        .card h2 {
+            color: #2E7D32;
+            margin-bottom: 20px;
+            font-size: 1.5em;
+            border-bottom: 2px solid #4CAF50;
             padding-bottom: 10px;
         }
         
-        .input-group {
+        .form-group {
             margin-bottom: 20px;
+        }
+        
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
         }
         
         label {
@@ -86,95 +86,102 @@
             color: #555;
         }
         
-        input, textarea, select {
+        input, select, textarea {
             width: 100%;
             padding: 12px;
             border: 2px solid #ddd;
-            border-radius: 6px;
+            border-radius: 8px;
             font-size: 14px;
             transition: border-color 0.3s;
         }
         
-        input:focus, textarea:focus, select:focus {
+        input:focus, select:focus, textarea:focus {
             outline: none;
-            border-color: #3498db;
-        }
-        
-        textarea {
-            resize: vertical;
-            min-height: 100px;
+            border-color: #4CAF50;
         }
         
         .btn {
-            background: #3498db;
+            background: #4CAF50;
             color: white;
             border: none;
-            padding: 12px 24px;
-            border-radius: 6px;
+            padding: 15px 30px;
+            border-radius: 8px;
             cursor: pointer;
             font-size: 16px;
             font-weight: 600;
             transition: all 0.3s;
             width: 100%;
-            position: relative;
         }
         
         .btn:hover:not(:disabled) {
-            background: #2980b9;
-            transform: translateY(-1px);
+            background: #45a049;
+            transform: translateY(-2px);
         }
         
         .btn:disabled {
-            background: #bdc3c7;
+            background: #ccc;
             cursor: not-allowed;
             transform: none;
         }
         
         .btn-secondary {
-            background: #95a5a6;
+            background: #2196F3;
         }
         
         .btn-secondary:hover:not(:disabled) {
-            background: #7f8c8d;
+            background: #1976D2;
         }
         
-        .response-area {
+        .results-section {
+            grid-column: 1 / -1;
             margin-top: 20px;
-            padding: 20px;
-            background: #f8f9fa;
-            border-radius: 6px;
-            border-left: 4px solid #3498db;
-            min-height: 150px;
         }
         
-        .response-area h4 {
-            margin-bottom: 10px;
-            color: #2c3e50;
+        .results-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+            margin-top: 20px;
         }
         
-        .loading-overlay {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0,0,0,0.5);
-            display: none;
-            justify-content: center;
-            align-items: center;
-            z-index: 1000;
-        }
-        
-        .loading-spinner {
+        .result-card {
             background: white;
-            padding: 30px;
-            border-radius: 10px;
+            border-radius: 12px;
+            padding: 20px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+        }
+        
+        .result-card h3 {
+            color: #2E7D32;
+            margin-bottom: 15px;
+            font-size: 1.2em;
+        }
+        
+        .crop-item {
+            background: #f8f9fa;
+            padding: 10px;
+            border-radius: 6px;
+            margin: 8px 0;
+            border-left: 4px solid #4CAF50;
+        }
+        
+        .scheme-item {
+            background: #e3f2fd;
+            padding: 10px;
+            border-radius: 6px;
+            margin: 8px 0;
+            border-left: 4px solid #2196F3;
+        }
+        
+        .loading {
             text-align: center;
+            padding: 40px;
+            color: #666;
         }
         
         .spinner {
             border: 4px solid #f3f3f3;
-            border-top: 4px solid #3498db;
+            border-top: 4px solid #4CAF50;
             border-radius: 50%;
             width: 40px;
             height: 40px;
@@ -187,56 +194,28 @@
             100% { transform: rotate(360deg); }
         }
         
-        .status {
-            position: fixed;
-            top: 20px;
-            right: 20px;
-            padding: 15px 20px;
-            border-radius: 6px;
-            font-weight: 600;
-            z-index: 1001;
-            max-width: 400px;
-            animation: slideIn 0.3s ease-out;
+        .farm-layout {
+            margin-top: 20px;
+            text-align: center;
         }
         
-        @keyframes slideIn {
-            from { transform: translateX(100%); opacity: 0; }
-            to { transform: translateX(0); opacity: 1; }
+        .farm-layout svg {
+            max-width: 100%;
+            height: auto;
+            border: 1px solid #ddd;
+            border-radius: 8px;
         }
         
-        .status.success {
-            background: #d4edda;
-            color: #155724;
-            border: 1px solid #c3e6cb;
+        .nearby-farms {
+            margin-top: 20px;
         }
         
-        .status.error {
-            background: #f8d7da;
-            color: #721c24;
-            border: 1px solid #f5c6cb;
-        }
-        
-        .grid-2 {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 15px;
-        }
-        
-        .context-item {
-            background: #f1f2f6;
-            padding: 10px;
-            border-radius: 4px;
-            margin: 5px 0;
-            font-size: 0.9em;
-        }
-        
-        .metric {
-            display: inline-block;
-            background: #e8f4fd;
-            padding: 4px 8px;
-            border-radius: 4px;
-            margin: 2px;
-            font-size: 0.85em;
+        .nearby-farm-item {
+            background: #fff3e0;
+            padding: 15px;
+            border-radius: 8px;
+            margin: 10px 0;
+            border-left: 4px solid #FF9800;
         }
         
         @media (max-width: 768px) {
@@ -244,496 +223,449 @@
                 grid-template-columns: 1fr;
             }
             
-            .query-section {
-                border-right: none;
-                border-bottom: 1px solid #eee;
+            .form-row {
+                grid-template-columns: 1fr;
             }
             
-            .grid-2 {
+            .results-grid {
                 grid-template-columns: 1fr;
             }
         }
     </style>
 </head>
 <body>
-    <div class="container">
-        <div class="header">
-            <h1>GRA Prototype</h1>
-            <p>Generative Retrieval-Augmented System</p>
-        </div>
-        
-        <div class="status-bar" id="statusBar">
-            🚀 System Ready - Click "Load Sample Data" to begin
-        </div>
-        
-        <div class="main-content">
-            <!-- Query Section -->
-            <div class="query-section">
-                <h2 class="section-title">Query Interface</h2>
-                
-                <div class="input-group">
-                    <label for="query">Enter your question:</label>
-                    <textarea id="query" placeholder="Ask anything about the knowledge base... (e.g., 'What is RAG and how does it work?')"></textarea>
-                </div>
-                
-                <div class="input-group">
-                    <label for="template">Response Template:</label>
-                    <select id="template">
-                        <option value="default">Default</option>
-                        <option value="analytical">Analytical</option>
-                        <option value="creative">Creative</option>
-                        <option value="technical">Technical</option>
-                        <option value="summarization">Summarization</option>
-                    </select>
-                </div>
-                
-                <div class="input-group">
-                    <label for="context">Additional Context (optional):</label>
-                    <textarea id="context" placeholder="Provide any additional context..."></textarea>
-                </div>
-                
-                <button class="btn" onclick="submitQuery()" id="queryBtn">Submit Query</button>
-                
-                <div class="response-area">
-                    <h4>Response:</h4>
-                    <div id="queryResponse">Submit a query to see the response here...</div>
-                </div>
-            </div>
-            
-            <!-- Simulation Section -->
-            <div class="simulation-section">
-                <h2 class="section-title">Simulation Center</h2>
-                
-                <div class="input-group">
-                    <label for="scenarioType">Scenario Type:</label>
-                    <select id="scenarioType" onchange="updateScenarioParams()">
-                        <option value="basic_query">Basic Query Test</option>
-                        <option value="stress_test">Stress Test</option>
-                        <option value="context_switching">Context Switching</option>
-                        <option value="knowledge_gap">Knowledge Gap Analysis</option>
-                    </select>
-                </div>
-                
-                <div id="scenarioParams">
-                    <div class="grid-2">
-                        <div class="input-group">
-                            <label for="queryCount">Query Count:</label>
-                            <input type="number" id="queryCount" value="10" min="1" max="100">
-                        </div>
-                        <div class="input-group">
-                            <label for="delay">Delay (seconds):</label>
-                            <input type="number" id="delay" value="0.1" min="0" max="5" step="0.1">
-                        </div>
-                    </div>
-                </div>
-                
-                <button class="btn btn-secondary" onclick="runSimulation()" id="simulationBtn">Run Simulation</button>
-                
-                <div class="response-area">
-                    <h4>Simulation Results:</h4>
-                    <div id="simulationResults">Run a simulation to see results here...</div>
-                </div>
-                
-                <div class="input-group" style="margin-top: 20px;">
-                    <button class="btn" onclick="loadSampleData()" id="sampleDataBtn">Load Sample Data</button>
-                </div>
-            </div>
-        </div>
-    </div>
-    
-    <div class="loading-overlay" id="loadingOverlay">
-        <div class="loading-spinner">
-            <div class="spinner"></div>
-            <p>Processing...</p>
-        </div>
-    </div>
+    <div id="root"></div>
 
-    <script>
-        // Configuration
+    <script type="text/babel">
+        const { useState, useEffect } = React;
+
+        // API Configuration
         const API_BASE = window.location.hostname === 'localhost' 
-            ? 'http://localhost:8000' 
-            : window.location.origin + '/api';
-        
-        // Global state
-        let isDataLoaded = false;
-        
-        // Initialize page
-        document.addEventListener('DOMContentLoaded', function() {
-            updateScenarioParams();
-            updateStatusBar('System initialized - Ready to load sample data');
-        });
-        
-        // Main Functions
-        async function submitQuery() {
-            const query = document.getElementById('query').value;
-            const template = document.getElementById('template').value;
-            const context = document.getElementById('context').value;
-            const responseDiv = document.getElementById('queryResponse');
-            const button = document.getElementById('queryBtn');
-            
-            // Validation
-            if (!query.trim()) {
-                showStatus('Please enter a question', 'error');
-                return;
-            }
-            
-            // UI Updates
-            button.disabled = true;
-            button.textContent = 'Processing...';
-            showLoading(true);
-            responseDiv.innerHTML = '<div style="color: #666; font-style: italic;">🤖 Processing your query...</div>';
-            updateStatusBar('Processing query...');
-            
-            try {
-                console.log('Submitting query to:', `${API_BASE}/query`);
-                
-                const response = await fetch(`${API_BASE}/query`, {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify({
-                        query: query,
-                        context: context || null
-                    })
-                });
-                
-                console.log('Response status:', response.status);
-                
-                if (!response.ok) {
-                    throw new Error(`HTTP ${response.status}: ${response.statusText}`);
-                }
-                
-                const data = await response.json();
-                console.log('Response data:', data);
-                
-                if (data.error) {
-                    throw new Error(data.error);
-                }
-                
-                displayQueryResponse(data);
-                showStatus('Query processed successfully! ✅', 'success');
-                updateStatusBar('Query completed successfully');
-                
-            } catch (error) {
-                console.error('Query error:', error);
-                const errorMsg = `Query failed: ${error.message}`;
-                displayError(errorMsg);
-                responseDiv.innerHTML = `<div style="color: #e74c3c; padding: 15px; background: #fdf2f2; border-radius: 4px;"><strong>❌ Error:</strong> ${error.message}<br><small>Check console for details</small></div>`;
-                updateStatusBar('Query failed - check error message');
-            }
-            
-            // Reset UI
-            button.disabled = false;
-            button.textContent = 'Submit Query';
-            showLoading(false);
-        }
-        
-        async function runSimulation() {
-            const scenarioType = document.getElementById('scenarioType').value;
-            const parameters = getScenarioParameters();
-            const resultsDiv = document.getElementById('simulationResults');
-            const button = document.getElementById('simulationBtn');
-            
-            // Validation
-            if (!validateSimulationParameters(parameters)) {
-                return;
-            }
-            
-            // UI Updates
-            button.disabled = true;
-            button.textContent = 'Running...';
-            showLoading(true);
-            resultsDiv.innerHTML = '<div style="color: #666; font-style: italic;">🎯 Running simulation...</div>';
-            updateStatusBar(`Running ${scenarioType} simulation...`);
-            
-            try {
-                console.log('Running simulation:', scenarioType, parameters);
-                
-                const response = await fetch(`${API_BASE}/simulate`, {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify({
-                        scenario_type: scenarioType,
-                        parameters: parameters
-                    })
-                });
-                
-                console.log('Simulation response status:', response.status);
-                
-                if (!response.ok) {
-                    throw new Error(`HTTP ${response.status}: ${response.statusText}`);
-                }
-                
-                const data = await response.json();
-                console.log('Simulation data:', data);
-                
-                if (data.error) {
-                    throw new Error(data.error);
-                }
-                
-                displaySimulationResults(data.result);
-                showStatus('Simulation completed successfully! 🎉', 'success');
-                updateStatusBar('Simulation completed successfully');
-                
-            } catch (error) {
-                console.error('Simulation error:', error);
-                const errorMsg = `Simulation failed: ${error.message}`;
-                displayError(errorMsg);
-                resultsDiv.innerHTML = `<div style="color: #e74c3c; padding: 15px; background: #fdf2f2; border-radius: 4px;"><strong>❌ Error:</strong> ${error.message}<br><small>Check console for details</small></div>`;
-                updateStatusBar('Simulation failed - check error message');
-            }
-            
-            // Reset UI
-            button.disabled = false;
-            button.textContent = 'Run Simulation';
-            showLoading(false);
-        }
-        
-        async function loadSampleData() {
-            const button = document.getElementById('sampleDataBtn');
-            const originalText = button.textContent;
-            
-            // UI Updates
-            button.textContent = 'Loading...';
-            button.disabled = true;
-            showLoading(true);
-            updateStatusBar('Loading sample data...');
-            
-            try {
-                console.log('Loading sample data from:', `${API_BASE}/ingest-sample`);
-                
-                const response = await fetch(`${API_BASE}/ingest-sample`, {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    }
-                });
-                
-                console.log('Sample data response status:', response.status);
-                
-                if (!response.ok) {
-                    throw new Error(`HTTP ${response.status}: ${response.statusText}`);
-                }
-                
-                const data = await response.json();
-                console.log('Sample data response:', data);
-                
-                if (data.error) {
-                    throw new Error(data.error);
-                }
-                
-                isDataLoaded = true;
-                showStatus(data.message || 'Sample data loaded successfully! 🎉', 'success');
-                button.textContent = '✅ Data Loaded';
-                updateStatusBar('Sample data loaded - Ready for queries and simulations');
-                
-                // Show data info
-                if (data.result) {
-                    showStatus(`📚 Loaded ${data.result.ingested_count} documents into knowledge base`, 'success');
-                }
-                
-            } catch (error) {
-                console.error('Sample data error:', error);
-                showStatus('Failed to load sample data: ' + error.message, 'error');
-                button.textContent = originalText;
-                button.disabled = false;
-                updateStatusBar('Failed to load sample data - check error message');
-            }
-            
-            showLoading(false);
-        }
-        
-        // Helper Functions
-        function validateSimulationParameters(parameters) {
-            for (const [key, value] of Object.entries(parameters)) {
-                if (typeof value === 'number' && (isNaN(value) || value < 0)) {
-                    showStatus(`Invalid ${key.replace('_', ' ')}: must be a positive number`, 'error');
-                    return false;
-                }
-            }
-            return true;
-        }
-        
-        function updateScenarioParams() {
-            const scenarioType = document.getElementById('scenarioType').value;
-            const paramsDiv = document.getElementById('scenarioParams');
-            
-            let html = '';
-            
-            switch (scenarioType) {
-                case 'basic_query':
-                    html = `
-                        <div class="grid-2">
-                            <div class="input-group">
-                                <label for="queryCount">Query Count:</label>
-                                <input type="number" id="queryCount" value="10" min="1" max="100">
-                            </div>
-                            <div class="input-group">
-                                <label for="delay">Delay (seconds):</label>
-                                <input type="number" id="delay" value="0.1" min="0" max="5" step="0.1">
-                            </div>
-                        </div>
-                    `;
-                    break;
-                case 'stress_test':
-                    html = `
-                        <div class="grid-2">
-                            <div class="input-group">
-                                <label for="concurrentUsers">Concurrent Users:</label>
-                                <input type="number" id="concurrentUsers" value="5" min="1" max="20">
-                            </div>
-                            <div class="input-group">
-                                <label for="queriesPerUser">Queries per User:</label>
-                                <input type="number" id="queriesPerUser" value="20" min="1" max="50">
-                            </div>
-                        </div>
-                    `;
-                    break;
-                case 'context_switching':
-                    html = `
-                        <div class="input-group">
-                            <label for="contextSwitches">Context Switches:</label>
-                            <input type="number" id="contextSwitches" value="5" min="1" max="20">
-                        </div>
-                    `;
-                    break;
-                case 'knowledge_gap':
-                    html = `
-                        <div class="grid-2">
-                            <div class="input-group">
-                                <label for="queryCount">Query Count:</label>
-                                <input type="number" id="queryCount" value="15" min="1" max="50">
-                            </div>
-                            <div class="input-group">
-                                <label for="knowledgeCoverage">Knowledge Coverage:</label>
-                                <input type="number" id="knowledgeCoverage" value="0.7" min="0" max="1" step="0.1">
-                            </div>
-                        </div>
-                    `;
-                    break;
-            }
-            
-            paramsDiv.innerHTML = html;
-        }
-        
-        function getScenarioParameters() {
-            const scenarioType = document.getElementById('scenarioType').value;
-            const params = {};
-            
-            switch (scenarioType) {
-                case 'basic_query':
-                    params.query_count = parseInt(document.getElementById('queryCount').value) || 10;
-                    params.delay = parseFloat(document.getElementById('delay').value) || 0.1;
-                    break;
-                case 'stress_test':
-                    params.concurrent_users = parseInt(document.getElementById('concurrentUsers').value) || 5;
-                    params.queries_per_user = parseInt(document.getElementById('queriesPerUser').value) || 20;
-                    break;
-                case 'context_switching':
-                    params.context_switches = parseInt(document.getElementById('contextSwitches').value) || 5;
-                    break;
-                case 'knowledge_gap':
-                    params.query_count = parseInt(document.getElementById('queryCount').value) || 15;
-                    params.knowledge_coverage = parseFloat(document.getElementById('knowledgeCoverage').value) || 0.7;
-                    break;
-            }
-            
-            return params;
-        }
-        
-        function displayQueryResponse(data) {
-            const responseDiv = document.getElementById('queryResponse');
-            
-            let contextHtml = '';
-            if (data.context && data.context.length > 0) {
-                contextHtml = '<div style="margin-top: 15px;"><strong>📚 Retrieved Context:</strong></div>';
-                data.context.forEach((item, index) => {
-                    contextHtml += `<div class="context-item">
-                        <strong>Document ${index + 1}:</strong> ${item.content.substring(0, 100)}...
-                        <br><small>Source: ${item.metadata?.source || 'unknown'}</small>
-                    </div>`;
-                });
-            }
-            
-            responseDiv.innerHTML = `
-                <div style="margin-bottom: 15px;">
-                    <strong>🤖 AI Response:</strong>
-                </div>
-                <div style="background: white; padding: 15px; border-radius: 6px; border-left: 4px solid #27ae60;">
-                    ${data.response}
-                </div>
-                ${contextHtml}
-                <div style="margin-top: 10px; font-size: 0.9em; color: #666;">
-                    📊 Retrieved ${data.context?.length || 0} relevant documents
-                </div>
-            `;
-        }
-        
-        function displaySimulationResults(results) {
-            const resultsDiv = document.getElementById('simulationResults');
-            
-            let html = `<div style="margin-bottom: 15px;"><strong>🎯 Scenario:</strong> <span class="metric">${results.scenario}</span></div>`;
-            
-            // Format results nicely
-            Object.keys(results).forEach(key => {
-                if (key !== 'scenario' && key !== 'results') {
-                    let value = results[key];
-                    
-                    // Format percentages
-                    if (key.includes('rate') || key.includes('accuracy') || key.includes('coverage')) {
-                        if (typeof value === 'number' && value <= 1) {
-                            value = (value * 100).toFixed(1) + '%';
-                        }
-                    }
-                    
-                    // Format time values
-                    if (key.includes('time')) {
-                        if (typeof value === 'number') {
-                            value = value.toFixed(3) + 's';
-                        }
-                    }
-                    
-                    html += `<div style="margin: 8px 0;">
-                        <strong>${key.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase())}:</strong> 
-                        <span class="metric">${value}</span>
-                    </div>`;
-                }
+            ? 'http://localhost:8001' 
+            : window.location.origin;
+
+        // Main App Component
+        function ClimateAdaptationApp() {
+            const [formData, setFormData] = useState({
+                location: '',
+                farm_size: '',
+                soil_type: '',
+                water_source: '',
+                current_crops: [],
+                budget: '',
+                experience_level: '',
+                climate_concerns: [],
+                adaptation_goals: []
             });
             
-            resultsDiv.innerHTML = html;
-        }
-        
-        function displayError(message) {
-            showStatus(message, 'error');
-        }
-        
-        function showStatus(message, type) {
-            // Remove existing status messages
-            document.querySelectorAll('.status').forEach(el => el.remove());
-            
-            const statusDiv = document.createElement('div');
-            statusDiv.className = `status ${type}`;
-            statusDiv.textContent = message;
-            
-            document.body.appendChild(statusDiv);
-            
-            setTimeout(() => {
-                if (statusDiv.parentNode) {
-                    statusDiv.remove();
+            const [results, setResults] = useState(null);
+            const [nearbyFarms, setNearbyFarms] = useState([]);
+            const [loading, setLoading] = useState(false);
+            const [error, setError] = useState('');
+
+            const handleInputChange = (field, value) => {
+                setFormData(prev => ({
+                    ...prev,
+                    [field]: value
+                }));
+            };
+
+            const handleArrayChange = (field, value) => {
+                const values = value.split(',').map(v => v.trim()).filter(v => v);
+                setFormData(prev => ({
+                    ...prev,
+                    [field]: values
+                }));
+            };
+
+            const submitForm = async () => {
+                if (!formData.location || !formData.farm_size) {
+                    setError('Please fill in location and farm size');
+                    return;
                 }
-            }, 5000);
+
+                setLoading(true);
+                setError('');
+
+                try {
+                    const response = await fetch(`${API_BASE}/analyze-climate`, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify({
+                            farm_details: {
+                                location: formData.location,
+                                farm_size: parseFloat(formData.farm_size),
+                                soil_type: formData.soil_type,
+                                water_source: formData.water_source,
+                                current_crops: formData.current_crops,
+                                budget: parseFloat(formData.budget) || 0,
+                                experience_level: formData.experience_level
+                            },
+                            climate_concerns: formData.climate_concerns,
+                            adaptation_goals: formData.adaptation_goals
+                        })
+                    });
+
+                    if (!response.ok) {
+                        throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+                    }
+
+                    const data = await response.json();
+                    setResults(data.adaptation_plan);
+                    
+                    // Also fetch nearby farms
+                    fetchNearbyFarms();
+                    
+                } catch (err) {
+                    setError(`Analysis failed: ${err.message}`);
+                } finally {
+                    setLoading(false);
+                }
+            };
+
+            const fetchNearbyFarms = async () => {
+                try {
+                    const response = await fetch(`${API_BASE}/nearby-farms`, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify({
+                            location: formData.location,
+                            radius_km: 10
+                        })
+                    });
+
+                    if (response.ok) {
+                        const data = await response.json();
+                        setNearbyFarms(data.nearby_plans || []);
+                    }
+                } catch (err) {
+                    console.error('Failed to fetch nearby farms:', err);
+                }
+            };
+
+            return (
+                <div className="container">
+                    <div className="header">
+                        <h1>🌱 Climate Adaptation System</h1>
+                        <p>AI-Powered Climate Resilient Agriculture Planning for Farmers</p>
+                    </div>
+
+                    <div className="main-content">
+                        <ClimateForm 
+                            formData={formData}
+                            onInputChange={handleInputChange}
+                            onArrayChange={handleArrayChange}
+                            onSubmit={submitForm}
+                            loading={loading}
+                            error={error}
+                        />
+                        
+                        <NearbyFarms farms={nearbyFarms} />
+                    </div>
+
+                    {results && (
+                        <div className="results-section">
+                            <ResultsDisplay results={results} />
+                        </div>
+                    )}
+                </div>
+            );
         }
-        
-        function showLoading(show) {
-            document.getElementById('loadingOverlay').style.display = show ? 'flex' : 'none';
+
+        // Climate Form Component
+        function ClimateForm({ formData, onInputChange, onArrayChange, onSubmit, loading, error }) {
+            return (
+                <div className="card">
+                    <h2>🏡 Farm Details & Climate Concerns</h2>
+                    
+                    <div className="form-group">
+                        <div className="form-row">
+                            <div>
+                                <label>Location (City, State)</label>
+                                <input
+                                    type="text"
+                                    value={formData.location}
+                                    onChange={(e) => onInputChange('location', e.target.value)}
+                                    placeholder="e.g., Pune, Maharashtra"
+                                />
+                            </div>
+                            <div>
+                                <label>Farm Size (acres)</label>
+                                <input
+                                    type="number"
+                                    value={formData.farm_size}
+                                    onChange={(e) => onInputChange('farm_size', e.target.value)}
+                                    placeholder="e.g., 5"
+                                />
+                            </div>
+                        </div>
+                    </div>
+
+                    <div className="form-group">
+                        <div className="form-row">
+                            <div>
+                                <label>Soil Type</label>
+                                <select
+                                    value={formData.soil_type}
+                                    onChange={(e) => onInputChange('soil_type', e.target.value)}
+                                >
+                                    <option value="">Select soil type</option>
+                                    <option value="clay">Clay</option>
+                                    <option value="loamy">Loamy</option>
+                                    <option value="sandy">Sandy</option>
+                                    <option value="black">Black Cotton</option>
+                                    <option value="red">Red</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label>Water Source</label>
+                                <select
+                                    value={formData.water_source}
+                                    onChange={(e) => onInputChange('water_source', e.target.value)}
+                                >
+                                    <option value="">Select water source</option>
+                                    <option value="borewell">Borewell</option>
+                                    <option value="well">Open Well</option>
+                                    <option value="river">River/Canal</option>
+                                    <option value="rainwater">Rainwater</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div className="form-group">
+                        <div className="form-row">
+                            <div>
+                                <label>Budget (₹)</label>
+                                <input
+                                    type="number"
+                                    value={formData.budget}
+                                    onChange={(e) => onInputChange('budget', e.target.value)}
+                                    placeholder="e.g., 100000"
+                                />
+                            </div>
+                            <div>
+                                <label>Experience Level</label>
+                                <select
+                                    value={formData.experience_level}
+                                    onChange={(e) => onInputChange('experience_level', e.target.value)}
+                                >
+                                    <option value="">Select experience</option>
+                                    <option value="beginner">Beginner (0-2 years)</option>
+                                    <option value="intermediate">Intermediate (3-10 years)</option>
+                                    <option value="experienced">Experienced (10+ years)</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div className="form-group">
+                        <label>Current Crops (comma-separated)</label>
+                        <input
+                            type="text"
+                            value={formData.current_crops.join(', ')}
+                            onChange={(e) => onArrayChange('current_crops', e.target.value)}
+                            placeholder="e.g., rice, wheat, cotton"
+                        />
+                    </div>
+
+                    <div className="form-group">
+                        <label>Climate Concerns (comma-separated)</label>
+                        <input
+                            type="text"
+                            value={formData.climate_concerns.join(', ')}
+                            onChange={(e) => onArrayChange('climate_concerns', e.target.value)}
+                            placeholder="e.g., drought, irregular rainfall, heat waves"
+                        />
+                    </div>
+
+                    <div className="form-group">
+                        <label>Adaptation Goals (comma-separated)</label>
+                        <input
+                            type="text"
+                            value={formData.adaptation_goals.join(', ')}
+                            onChange={(e) => onArrayChange('adaptation_goals', e.target.value)}
+                            placeholder="e.g., increase yield, reduce water usage, improve soil health"
+                        />
+                    </div>
+
+                    {error && (
+                        <div style={{color: 'red', marginBottom: '15px', padding: '10px', background: '#ffebee', borderRadius: '4px'}}>
+                            {error}
+                        </div>
+                    )}
+
+                    <button 
+                        className="btn" 
+                        onClick={onSubmit} 
+                        disabled={loading}
+                    >
+                        {loading ? 'Analyzing...' : '🔍 Generate Climate Adaptation Plan'}
+                    </button>
+                </div>
+            );
         }
-        
-        function updateStatusBar(message) {
-            document.getElementById('statusBar').textContent = message;
+
+        // Nearby Farms Component
+        function NearbyFarms({ farms }) {
+            if (farms.length === 0) {
+                return (
+                    <div className="card">
+                        <h2>🏘️ Nearby Farm Plans</h2>
+                        <p style={{color: '#666', textAlign: 'center', padding: '20px'}}>
+                            Submit your farm details to see adaptation plans from nearby farms
+                        </p>
+                    </div>
+                );
+            }
+
+            return (
+                <div className="card">
+                    <h2>🏘️ Nearby Farm Plans ({farms.length})</h2>
+                    <div className="nearby-farms">
+                        {farms.map((farm, index) => (
+                            <div key={index} className="nearby-farm-item">
+                                <strong>{farm.location}</strong> - {farm.farm_size} acres
+                                <br />
+                                <small>Soil: {farm.soil_type} | Crops: {farm.recommended_crops?.join(', ')}</small>
+                                <br />
+                                <small style={{color: '#4CAF50'}}>✅ {farm.success_metrics?.climate_resilience} resilience</small>
+                            </div>
+                        ))}
+                    </div>
+                </div>
+            );
         }
+
+        // Results Display Component
+        function ResultsDisplay({ results }) {
+            if (!results) return null;
+
+            return (
+                <div className="card">
+                    <h2>📊 Climate Adaptation Plan Results</h2>
+                    
+                    {results.climate_analysis && (
+                        <div className="loading">
+                            <div className="spinner"></div>
+                            <p>Generating comprehensive climate adaptation plan...</p>
+                        </div>
+                    )}
+
+                    <div className="results-grid">
+                        {/* Climate Analysis */}
+                        {results.climate_analysis && (
+                            <div className="result-card">
+                                <h3>🌡️ Climate Risk Analysis</h3>
+                                <div>
+                                    <strong>Identified Risks:</strong>
+                                    {results.climate_analysis.risks?.map((risk, index) => (
+                                        <div key={index} className="crop-item">
+                                            {risk.replace('_', ' ').toUpperCase()}
+                                        </div>
+                                    ))}
+                                </div>
+                                <div style={{marginTop: '10px'}}>
+                                    <strong>Urgency Level:</strong> 
+                                    <span style={{color: results.climate_analysis.urgency_level === 'High' ? 'red' : 'orange'}}>
+                                        {results.climate_analysis.urgency_level}
+                                    </span>
+                                </div>
+                            </div>
+                        )}
+
+                        {/* Crop Recommendations */}
+                        {results.crop_recommendations && (
+                            <div className="result-card">
+                                <h3>🌾 Recommended Crops</h3>
+                                {results.crop_recommendations.recommended_crops?.map((crop, index) => (
+                                    <div key={index} className="crop-item">
+                                        <strong>{crop}</strong>
+                                        <br />
+                                        <small>Climate resilient • High yield potential</small>
+                                    </div>
+                                ))}
+                            </div>
+                        )}
+
+                        {/* Government Schemes */}
+                        {results.government_schemes && (
+                            <div className="result-card">
+                                <h3>🏛️ Government Schemes</h3>
+                                {results.government_schemes.recommended_schemes?.map((scheme, index) => (
+                                    <div key={index} className="scheme-item">
+                                        <strong>{scheme.name}</strong>
+                                        <br />
+                                        <small>Subsidy: ₹{scheme.subsidy?.amount?.toLocaleString()}</small>
+                                    </div>
+                                ))}
+                            </div>
+                        )}
+
+                        {/* Market Analysis */}
+                        {results.market_analysis && (
+                            <div className="result-card">
+                                <h3>📈 Market Analysis</h3>
+                                <div>
+                                    <strong>Market Insights:</strong>
+                                    {results.market_analysis.market_insights?.map((insight, index) => (
+                                        <div key={index} style={{margin: '5px 0', fontSize: '0.9em'}}>
+                                            • {insight}
+                                        </div>
+                                    ))}
+                                </div>
+                            </div>
+                        )}
+
+                        {/* Implementation Timeline */}
+                        {results.implementation_timeline && (
+                            <div className="result-card">
+                                <h3>📅 Implementation Timeline</h3>
+                                {results.implementation_timeline.map((phase, index) => (
+                                    <div key={index} style={{marginBottom: '15px'}}>
+                                        <strong>{phase.phase}</strong>
+                                        <ul style={{marginLeft: '20px', marginTop: '5px'}}>
+                                            {phase.actions?.map((action, actionIndex) => (
+                                                <li key={actionIndex} style={{fontSize: '0.9em', margin: '3px 0'}}>
+                                                    {action}
+                                                </li>
+                                            ))}
+                                        </ul>
+                                    </div>
+                                ))}
+                            </div>
+                        )}
+
+                        {/* Cost Analysis */}
+                        {results.estimated_costs && (
+                            <div className="result-card">
+                                <h3>💰 Cost Analysis</h3>
+                                <div>
+                                    <div><strong>Total Cost:</strong> ₹{results.estimated_costs.total_estimated_cost?.toLocaleString()}</div>
+                                    <div><strong>Government Subsidy:</strong> ₹{results.estimated_costs.government_subsidy?.toLocaleString()}</div>
+                                    <div><strong>Your Contribution:</strong> ₹{results.estimated_costs.farmer_contribution?.toLocaleString()}</div>
+                                </div>
+                            </div>
+                        )}
+                    </div>
+
+                    {/* Farm Layout SVG */}
+                    {results.farm_layout_svg && (
+                        <div className="farm-layout">
+                            <h3>🗺️ Recommended Farm Layout</h3>
+                            <div dangerouslySetInnerHTML={{__html: results.farm_layout_svg}} />
+                        </div>
+                    )}
+                </div>
+            );
+        }
+
+        // Render the app
+        ReactDOM.render(<ClimateAdaptationApp />, document.getElementById('root'));
     </script>
 </body>
 </html>

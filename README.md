@@ -1,213 +1,133 @@
-# 🤖 GRA Prototype - Generative Retrieval-Augmented System
+# Climate Adaptation System
 
-A comprehensive AI system prototype featuring RAG (Retrieval-Augmented Generation) capabilities, simulation testing, and a modern web interface.
+AI-Powered Climate Resilient Agriculture Planning for Farmers
 
-## 🌟 Features
+## Overview
 
-- **RAG Query Processing**: Vector-based document retrieval with ChromaDB
-- **Simulation Testing**: 4 different scenario types for system validation
-- **Modern Web Interface**: Professional UI with real-time results
-- **Multiple Response Templates**: 5 different prompt templates
-- **Performance Monitoring**: Built-in benchmarking and metrics
-- **Concurrent Processing**: Handles multiple users simultaneously
+This system helps farmers create comprehensive climate adaptation plans using AI analysis. It provides:
 
-## 🏗️ Architecture
+- **Climate Risk Analysis**: Identifies climate risks specific to your location
+- **Crop Recommendations**: Suggests climate-resilient crops based on your farm conditions
+- **Market Analysis**: Analyzes market potential for recommended crops
+- **Government Schemes**: Finds relevant subsidies and support programs
+- **Farm Layout Planning**: Generates visual farm layout diagrams
+- **Nearby Farm Insights**: Learn from successful adaptation plans in your area
 
-```
-gra-prototype/
-├── backend/                 # FastAPI backend
-│   ├── main.py             # Main application entry point
-│   ├── rag/                # RAG components
-│   │   ├── retriever.py    # Vector retrieval system
-│   │   └── ingestion.py    # Document ingestion
-│   ├── simulation/         # Simulation engine
-│   │   └── scenarios.py    # Test scenarios
-│   ├── prompts/            # Prompt management
-│   │   └── templates.py    # Response templates
-│   └── data/               # Data storage
-├── frontend/               # Web interface
-│   └── index.html         # Main UI
-├── tests/                  # Test suite
-└── docs/                   # Documentation
-```
+## Features
 
-## 🚀 Quick Start
+### 🌡️ Climate Analysis
+- Location-specific climate risk assessment
+- Adaptation strategy recommendations
+- Urgency level calculation
+
+### 🌾 Smart Crop Advisory
+- AI-powered crop recommendations
+- Soil and water compatibility analysis
+- Seasonal planting calendar
+- Yield and income projections
+
+### 📈 Market Intelligence
+- Real-time market price analysis
+- Demand forecasting
+- Export potential assessment
+- Marketing strategy recommendations
+
+### 🏛️ Government Scheme Finder
+- Automated scheme matching
+- Eligibility verification
+- Application timeline planning
+- Document requirement checklist
+
+### 🗺️ Farm Layout Designer
+- Visual farm layout generation
+- Crop placement optimization
+- Infrastructure planning
+- Water source integration
+
+## Technology Stack
+
+### Backend
+- **FastAPI**: Modern Python web framework
+- **SQLAlchemy**: Database ORM
+- **SQLite**: Local database storage
+- **AI Agents**: Climate analysis, crop advisory, market analysis, scheme finder
+
+### Frontend
+- **React**: Modern JavaScript UI library
+- **Vanilla CSS**: Custom styling
+- **SVG Graphics**: Farm layout visualization
+
+### Database
+- **SQLite**: Stores adaptation plans and farm data
+- **JSON Knowledge Base**: Crop data, market info, government schemes
+
+## Installation & Setup
 
 ### Prerequisites
 - Python 3.8+
-- pip package manager
+- Modern web browser
 
-### Installation
-
-1. **Clone the repository**
+### Backend Setup
 ```bash
-git clone <your-repo-url>
-cd gra-prototype
+cd gra-prototype/backend
+pip install -r ../requirements.txt
+python main.py
 ```
 
-2. **Install dependencies**
+### Frontend Access
+Open `frontend/index.html` in your web browser or serve it locally:
 ```bash
-pip install -r requirements.txt
+cd gra-prototype/frontend
+python -m http.server 3000
 ```
 
-3. **Start the backend server**
-```bash
-python backend/main.py
-```
+## Usage
 
-4. **Open the frontend**
-- Open `frontend/index.html` in your browser
-- Or visit `http://localhost:8000` (if serving static files)
+1. **Fill Farm Details**: Enter your location, farm size, soil type, water source, and budget
+2. **Specify Concerns**: List your climate concerns (drought, flooding, etc.)
+3. **Set Goals**: Define your adaptation goals (increase yield, reduce water usage, etc.)
+4. **Generate Plan**: Click "Generate Climate Adaptation Plan" to get AI analysis
+5. **Review Results**: Examine crop recommendations, government schemes, and implementation timeline
+6. **View Layout**: See the visual farm layout diagram
+7. **Check Nearby Farms**: Learn from successful plans in your area
 
-5. **Load sample data**
-```bash
-curl -X POST http://localhost:8000/ingest-sample
-```
+## API Endpoints
 
-## 🧪 Testing
+- `POST /analyze-climate`: Generate comprehensive adaptation plan
+- `POST /nearby-farms`: Find adaptation plans from nearby farms
+- `GET /plan/{plan_id}`: Retrieve specific adaptation plan
+- `GET /crops`: Get crop database
+- `GET /schemes`: Get government schemes database
 
-### Automated Testing
-```bash
-# Run comprehensive test suite
-python test_system.py
+## Sample Data
 
-# Run advanced query tests
-python test_advanced_queries.py
+The system includes comprehensive sample data:
+- **10 Crop varieties** with climate tolerance, market prices, and growing requirements
+- **6 Government schemes** with eligibility criteria and subsidy amounts
+- **Market data** with price trends and demand patterns
 
-# Run detailed simulation tests
-python test_simulations_detailed.py
+## Future Enhancements
 
-# Run performance benchmarks
-python performance_benchmark.py
-```
+- **LLM Integration**: Connect with Claude/GPT for advanced AI analysis
+- **Weather API**: Real-time weather data integration
+- **Mobile App**: React Native mobile application
+- **IoT Integration**: Sensor data for precision agriculture
+- **Blockchain**: Supply chain traceability
+- **Machine Learning**: Predictive analytics for yield optimization
 
-### Manual Testing
-1. Open `frontend/index.html` in your browser
-2. Click "Load Sample Data"
-3. Try different queries and simulation scenarios
-4. See `TESTING_GUIDE.md` for detailed instructions
+## Contributing
 
-## 📊 Performance
+This is a prototype system. For production use:
+1. Integrate with real LLM APIs (OpenAI, Anthropic)
+2. Add proper authentication and user management
+3. Implement geospatial databases for location queries
+4. Add real-time weather and market data APIs
+5. Enhance security and data validation
 
-- **Query Response Time**: ~2.1 seconds average
-- **Concurrent Users**: Supports up to 10 concurrent users
-- **Throughput**: 3.7 queries/second under load
-- **Success Rate**: 95-100% across all scenarios
-- **Simulation Types**: 4 different testing scenarios
+## License
 
-## 🔧 API Endpoints
-
-- `GET /` - Health check
-- `POST /query` - Process RAG queries
-- `POST /simulate` - Run simulation scenarios
-- `GET /scenarios` - List available scenarios
-- `POST /ingest-sample` - Load sample data
-
-## 🎯 Simulation Scenarios
-
-1. **Basic Query Test**: Performance testing with configurable load
-2. **Stress Test**: Concurrent user simulation
-3. **Context Switching**: Topic change handling validation
-4. **Knowledge Gap Analysis**: System behavior with limited data
-
-## 📝 Response Templates
-
-1. **Default**: Standard informative responses
-2. **Analytical**: Data-driven, structured analysis
-3. **Creative**: Innovative, brainstorming approach
-4. **Technical**: Detailed implementation focus
-5. **Summarization**: Concise key points format
-
-## 🛠️ Configuration
-
-### Environment Variables
-```bash
-# Optional: Set custom configurations
-export GRA_HOST=0.0.0.0
-export GRA_PORT=8000
-export GRA_DEBUG=false
-```
-
-### Customization
-- Modify `backend/prompts/templates.py` for custom response templates
-- Update `backend/simulation/scenarios.py` for new test scenarios
-- Extend `backend/rag/ingestion.py` for additional data sources
-
-## 📈 Monitoring
-
-The system includes built-in performance monitoring:
-- Response time tracking
-- Success rate monitoring
-- Resource utilization metrics
-- Concurrent user handling stats
-
-## 🔒 Security
-
-- CORS enabled for frontend integration
-- Input validation on all endpoints
-- Error handling with proper HTTP status codes
-- No sensitive data exposure in responses
-
-## 🚀 Deployment Options
-
-### Local Development
-```bash
-python backend/main.py
-```
-
-### Docker (Recommended for Production)
-```dockerfile
-# See deployment guide for Docker configuration
-```
-
-### Cloud Platforms
-- **Heroku**: Easy deployment with git integration
-- **Railway**: Modern platform with automatic deployments
-- **Render**: Free tier available for prototypes
-- **AWS/GCP/Azure**: Enterprise-grade hosting
-
-## 📚 Documentation
-
-- `TESTING_GUIDE.md` - Comprehensive testing instructions
-- `FINAL_TEST_REPORT.md` - Complete test results and analysis
-- API documentation available at `/docs` when server is running
-
-## 🤝 Contributing
-
-1. Fork the repository
-2. Create a feature branch
-3. Make your changes
-4. Run the test suite
-5. Submit a pull request
-
-## 📄 License
-
-This project is licensed under the MIT License - see the LICENSE file for details.
-
-## 🎯 Test Results
-
-✅ **System Status**: Fully Operational  
-✅ **Test Coverage**: 100% (All 31 tests passed)  
-✅ **Performance**: Acceptable (2.1s avg response time)  
-✅ **Scalability**: Supports concurrent users  
-✅ **Reliability**: 95-100% success rate  
-
-## 🔮 Future Enhancements
-
-- [ ] Response caching for improved performance
-- [ ] Real-time monitoring dashboard
-- [ ] Additional simulation scenarios
-- [ ] Enhanced vector database optimization
-- [ ] User authentication system
-- [ ] Advanced analytics and reporting
-
-## 📞 Support
-
-For questions, issues, or contributions:
-- Create an issue in the repository
-- Check the documentation in `/docs`
-- Review test results in `FINAL_TEST_REPORT.md`
+MIT License - Feel free to use and modify for your projects.
 
 ---
 
-**Built with ❤️ using FastAPI, ChromaDB, and modern web technologies**
+**Built for farmers, by developers who care about sustainable agriculture and climate resilience.**
