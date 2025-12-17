@@ -450,7 +450,16 @@
                     
                 } catch (err) {
                     console.error('Analysis error:', err);
-                    setError(`❌ Analysis failed: ${err.message}. Please ensure backend is running with Gen AI configured.`);
+                    
+                    // Provide helpful error message
+                    let errorMessage = '❌ Cannot connect to backend. ';
+                    if (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') {
+                        errorMessage += 'Please ensure backend is running: cd backend && python main.py';
+                    } else {
+                        errorMessage += 'Backend not deployed. Please deploy backend to Railway. See DEPLOY_BACKEND.md for instructions.';
+                    }
+                    
+                    setError(errorMessage);
                 } finally {
                     setLoading(false);
                 }
@@ -677,6 +686,14 @@
                         <div style={{background: '#e8f5e9', padding: '12px', borderRadius: '8px', marginTop: '15px', fontSize: '14px', border: '1px solid #4CAF50'}}>
                             <strong>✨ Powered by AI:</strong> Advanced generative AI for climate analysis, crop recommendations, and personalized farming strategies
                         </div>
+                        {window.location.hostname !== 'localhost' && window.location.hostname !== '127.0.0.1' && (
+                            <div style={{background: '#fff3e0', padding: '12px', borderRadius: '8px', marginTop: '10px', fontSize: '13px', border: '1px solid #FF9800'}}>
+                                <strong>⚠️ Note:</strong> Backend needs to be deployed separately. 
+                                <a href="https://github.com/shreyash0216/gra-prototype/blob/main/DEPLOY_BACKEND.md" target="_blank" style={{color: '#F57C00', textDecoration: 'underline', marginLeft: '5px'}}>
+                                    Deploy Backend →
+                                </a>
+                            </div>
+                        )}
                     </div>
 
                     <div className="main-content">
