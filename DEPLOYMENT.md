@@ -1,8 +1,12 @@
 # Deployment Guide - Climate Adaptation System
 
-## 🚀 Quick Deploy to Vercel
+## 🚀 Recommended Deployment Strategy
 
-### Method 1: Vercel Dashboard (Recommended)
+### Frontend (Vercel) + Backend (Railway)
+
+This approach gives you the best performance and reliability:
+
+#### Step 1: Deploy Frontend to Vercel
 
 1. **Go to Vercel**
    - Visit: https://vercel.com
@@ -18,12 +22,34 @@
    - Root Directory: **Leave empty**
    - Build Command: **Leave empty**
    - Output Directory: **frontend**
-   - Install Command: **pip install -r requirements-vercel.txt**
 
-4. **Deploy**
+4. **Deploy Frontend**
    - Click "Deploy"
-   - Wait for deployment to complete
-   - Get your live URL!
+   - Get your frontend URL (e.g., `https://your-app.vercel.app`)
+
+#### Step 2: Deploy Backend to Railway
+
+1. **Go to Railway**
+   - Visit: https://railway.app
+   - Sign up/Login with GitHub
+
+2. **Deploy Backend**
+   - Click "New Project"
+   - Select "Deploy from GitHub repo"
+   - Choose your `gra-prototype` repository
+   - Railway will auto-detect Python and deploy
+
+3. **Get Backend URL**
+   - After deployment, get your backend URL (e.g., `https://your-backend.railway.app`)
+
+#### Step 3: Connect Frontend to Backend
+
+1. **Update Frontend Configuration**
+   - Go to your Vercel project settings
+   - Add environment variable: `REACT_APP_API_BASE=https://your-backend.railway.app`
+   - Redeploy frontend
+
+## 🌐 Alternative: All-in-One Deployment
 
 ### Method 2: Vercel CLI
 

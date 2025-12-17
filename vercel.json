@@ -1,22 +1,14 @@
 {
-  "functions": {
-    "backend/main.py": {
-      "runtime": "python3.9"
-    }
-  },
-  "routes": [
+  "builds": [
     {
-      "src": "/api/(.*)",
-      "dest": "/backend/main.py"
-    },
+      "src": "frontend/index.html",
+      "use": "@vercel/static"
+    }
+  ],
+  "routes": [
     {
       "src": "/(.*)",
       "dest": "/frontend/index.html"
     }
-  ],
-  "build": {
-    "env": {
-      "PYTHONPATH": "backend"
-    }
-  }
+  ]
 }
