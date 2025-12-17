@@ -69,3 +69,5 @@ advanced_test_queries.json
 # Temporary files
 *.tmp
 *.temp
+.vercel
+.env*.local

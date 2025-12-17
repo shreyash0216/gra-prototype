@@ -427,34 +427,26 @@
                     });
 
                     if (!response.ok) {
-                        // Fallback to demo mode if backend is not available
-                        console.log('Backend not available, using demo mode');
-                        const demoResults = generateDemoResults(formData);
-                        setResults(demoResults);
-                        setNearbyFarms(generateDemoNearbyFarms());
-                        return;
+                        throw new Error(`Backend error: ${response.status} ${response.statusText}`);
                     }
 
                     const data = await response.json();
                     
-                    // Show AI status
-                    if (data.ai_powered) {
-                        console.log('✨ Results powered by Gen AI');
-                    } else {
-                        console.log('📊 Results from rule-based analysis');
+                    // Check if Gen AI was used
+                    if (!data.ai_powered) {
+                        setError('⚠️ Gen AI not configured. Please add OPENAI_API_KEY to backend. See GEN_AI_SETUP.md');
+                        return;
                     }
                     
+                    console.log('✨ Results powered by Gen AI');
                     setResults(data.adaptation_plan);
                     
                     // Also fetch nearby farms
                     fetchNearbyFarms();
                     
                 } catch (err) {
-                    // Fallback to demo mode
-                    console.log('Using demo mode due to error:', err.message);
-                    const demoResults = generateDemoResults(formData);
-                    setResults(demoResults);
-                    setNearbyFarms(generateDemoNearbyFarms());
+                    console.error('Analysis error:', err);
+                    setError(`❌ Analysis failed: ${err.message}. Please ensure backend is running with Gen AI configured.`);
                 } finally {
                     setLoading(false);
                 }
@@ -584,7 +576,9 @@
                 setChatMessages(prev => [...prev, { type: 'user', text: userMessage }]);
                 setChatInput('');
 
-                // Try to get AI response from backend
+                // Add thinking indicator
+                setChatMessages(prev => [...prev, { type: 'ai', text: '🤔 Thinking...' }]);
+
                 try {
                     const response = await fetch(`${API_BASE}/ai-chat`, {
                         method: 'POST',
@@ -595,20 +589,38 @@
                         })
                     });
 
-                    if (response.ok) {
-                        const data = await response.json();
-                        setChatMessages(prev => [...prev, { type: 'ai', text: data.response }]);
-                        return;
+                    if (!response.ok) {
+                        throw new Error('Backend not available');
                     }
-                } catch (err) {
-                    console.log('Using local AI response');
-                }
 
-                // Fallback to local AI responses
-                const aiResponse = generateAIResponse(userMessage);
-                setTimeout(() => {
-                    setChatMessages(prev => [...prev, { type: 'ai', text: aiResponse }]);
-                }, 500);
+                    const data = await response.json();
+                    
+                    // Remove thinking indicator and add real response
+                    setChatMessages(prev => {
+                        const newMessages = prev.slice(0, -1); // Remove thinking message
+                        return [...newMessages, { type: 'ai', text: data.response }];
+                    });
+
+                    if (!data.ai_powered) {
+                        // Show warning if Gen AI not configured
+                        setTimeout(() => {
+                            setChatMessages(prev => [...prev, { 
+                                type: 'ai', 
+                                text: '⚠️ Note: Gen AI not configured. Add OPENAI_API_KEY for better responses.' 
+                            }]);
+                        }, 1000);
+                    }
+                    
+                } catch (err) {
+                    console.error('Chat error:', err);
+                    setChatMessages(prev => {
+                        const newMessages = prev.slice(0, -1); // Remove thinking message
+                        return [...newMessages, { 
+                            type: 'ai', 
+                            text: '❌ Unable to connect to AI backend. Please ensure the backend is running with Gen AI configured.' 
+                        }];
+                    });
+                }
             };
 
             const generateAIResponse = (message) => {
@@ -817,11 +829,13 @@
                         <textarea
                             value={formData.current_crops.join(', ')}
                             onChange={(e) => onArrayChange('current_crops', e.target.value)}
-                            placeholder="e.g., rice, wheat, cotton"
-                            rows="2"
-                            style={{minHeight: '60px'}}
+                            placeholder="e.g., rice, wheat, cotton, sugarcane"
+                            rows="3"
+                            style={{minHeight: '70px', resize: 'vertical'}}
                         />
-                        <small style={{color: '#666', fontSize: '12px'}}>Separate multiple crops with commas</small>
+                        <small style={{color: '#666', fontSize: '12px', display: 'block', marginTop: '5px'}}>
+                            ✏️ Type multiple crops separated by commas. Example: rice, wheat, cotton
+                        </small>
                     </div>
 
                     <div className="form-group">
@@ -829,11 +843,13 @@
                         <textarea
                             value={formData.climate_concerns.join(', ')}
                             onChange={(e) => onArrayChange('climate_concerns', e.target.value)}
-                            placeholder="e.g., drought, irregular rainfall, heat waves"
-                            rows="2"
-                            style={{minHeight: '60px'}}
+                            placeholder="e.g., drought, irregular rainfall, heat waves, water scarcity"
+                            rows="3"
+                            style={{minHeight: '70px', resize: 'vertical'}}
                         />
-                        <small style={{color: '#666', fontSize: '12px'}}>Separate multiple concerns with commas</small>
+                        <small style={{color: '#666', fontSize: '12px', display: 'block', marginTop: '5px'}}>
+                            ✏️ Type multiple concerns separated by commas. Example: drought, heat waves
+                        </small>
                     </div>
 
                     <div className="form-group">
@@ -841,11 +857,13 @@
                         <textarea
                             value={formData.adaptation_goals.join(', ')}
                             onChange={(e) => onArrayChange('adaptation_goals', e.target.value)}
-                            placeholder="e.g., increase yield, reduce water usage, improve soil health"
-                            rows="2"
-                            style={{minHeight: '60px'}}
+                            placeholder="e.g., increase yield, reduce water usage, improve soil health, climate resilience"
+                            rows="3"
+                            style={{minHeight: '70px', resize: 'vertical'}}
                         />
-                        <small style={{color: '#666', fontSize: '12px'}}>Separate multiple goals with commas</small>
+                        <small style={{color: '#666', fontSize: '12px', display: 'block', marginTop: '5px'}}>
+                            ✏️ Type multiple goals separated by commas. Example: increase yield, save water
+                        </small>
                     </div>
 
                     {error && (
