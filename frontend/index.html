@@ -364,11 +364,11 @@
                 farm_size: '',
                 soil_type: '',
                 water_source: '',
-                current_crops: [],
+                current_crops: '',  // Changed to string
                 budget: '',
                 experience_level: '',
-                climate_concerns: [],
-                adaptation_goals: []
+                climate_concerns: '',  // Changed to string
+                adaptation_goals: ''  // Changed to string
             });
             
             const [results, setResults] = useState(null);
@@ -389,10 +389,10 @@
             };
 
             const handleArrayChange = (field, value) => {
-                const values = value.split(',').map(v => v.trim()).filter(v => v);
+                // Just store the raw string value, don't split yet
                 setFormData(prev => ({
                     ...prev,
-                    [field]: values
+                    [field]: value
                 }));
             };
 
@@ -417,12 +417,12 @@
                                 farm_size: parseFloat(formData.farm_size),
                                 soil_type: formData.soil_type,
                                 water_source: formData.water_source,
-                                current_crops: formData.current_crops,
+                                current_crops: formData.current_crops.split(',').map(v => v.trim()).filter(v => v),
                                 budget: parseFloat(formData.budget) || 0,
                                 experience_level: formData.experience_level
                             },
-                            climate_concerns: formData.climate_concerns,
-                            adaptation_goals: formData.adaptation_goals
+                            climate_concerns: formData.climate_concerns.split(',').map(v => v.trim()).filter(v => v),
+                            adaptation_goals: formData.adaptation_goals.split(',').map(v => v.trim()).filter(v => v)
                         })
                     });
 
@@ -433,12 +433,16 @@
                     const data = await response.json();
                     
                     // Check if Gen AI was used
-                    if (!data.ai_powered) {
-                        setError('⚠️ Gen AI not configured. Please add OPENAI_API_KEY to backend. See GEN_AI_SETUP.md');
-                        return;
+                    if (data.ai_powered) {
+                        console.log('✨ Results powered by Gen AI');
+                    } else {
+                        console.log('📊 Results from rule-based analysis (Gen AI not configured)');
+                        // Show info message but don't block results
+                        setTimeout(() => {
+                            alert('ℹ️ Using rule-based analysis. For AI-powered results, configure OPENAI_API_KEY in backend. See GEN_AI_SETUP.md');
+                        }, 1000);
                     }
                     
-                    console.log('✨ Results powered by Gen AI');
                     setResults(data.adaptation_plan);
                     
                     // Also fetch nearby farms
@@ -827,7 +831,7 @@
                     <div className="form-group">
                         <label>Current Crops (comma-separated)</label>
                         <textarea
-                            value={formData.current_crops.join(', ')}
+                            value={formData.current_crops}
                             onChange={(e) => onArrayChange('current_crops', e.target.value)}
                             placeholder="e.g., rice, wheat, cotton, sugarcane"
                             rows="3"
@@ -841,7 +845,7 @@
                     <div className="form-group">
                         <label>Climate Concerns (comma-separated)</label>
                         <textarea
-                            value={formData.climate_concerns.join(', ')}
+                            value={formData.climate_concerns}
                             onChange={(e) => onArrayChange('climate_concerns', e.target.value)}
                             placeholder="e.g., drought, irregular rainfall, heat waves, water scarcity"
                             rows="3"
@@ -855,7 +859,7 @@
                     <div className="form-group">
                         <label>Adaptation Goals (comma-separated)</label>
                         <textarea
-                            value={formData.adaptation_goals.join(', ')}
+                            value={formData.adaptation_goals}
                             onChange={(e) => onArrayChange('adaptation_goals', e.target.value)}
                             placeholder="e.g., increase yield, reduce water usage, improve soil health, climate resilience"
                             rows="3"

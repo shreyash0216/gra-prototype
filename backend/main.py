@@ -93,34 +93,35 @@ async def analyze_climate_adaptation(
                 # If AI doesn't return valid JSON, use structured agents
                 use_gen_ai = False
         
+        # Always use rule-based agents as fallback or supplement
+        print("📊 Using rule-based agents...")
+        
+        # Step 1: Climate Risk Analysis
+        climate_analysis = await climate_analyzer.analyze_risks(
+            location=request.farm_details.location,
+            concerns=request.climate_concerns
+        )
+        
+        # Step 2: Crop Recommendations
+        crop_recommendations = await crop_advisor.recommend_crops(
+            farm_details=request.farm_details.dict(),
+            climate_risks=climate_analysis["risks"]
+        )
+        
+        # Step 3: Market Analysis
+        market_analysis = await market_analyzer.analyze_market_potential(
+            crops=crop_recommendations["recommended_crops"],
+            location=request.farm_details.location
+        )
+        
+        # Step 4: Government Schemes
+        available_schemes = await scheme_finder.find_relevant_schemes(
+            farm_details=request.farm_details.dict(),
+            adaptation_goals=request.adaptation_goals
+        )
+        
         if not use_gen_ai:
-            # Fallback to rule-based agents
-            print("📊 Using rule-based agents...")
-            
-            # Step 1: Climate Risk Analysis
-            climate_analysis = await climate_analyzer.analyze_risks(
-                location=request.farm_details.location,
-                concerns=request.climate_concerns
-            )
-            
-            # Step 2: Crop Recommendations
-            crop_recommendations = await crop_advisor.recommend_crops(
-                farm_details=request.farm_details.dict(),
-                climate_risks=climate_analysis["risks"]
-            )
-            
-            # Step 3: Market Analysis
-            market_analysis = await market_analyzer.analyze_market_potential(
-                crops=crop_recommendations["recommended_crops"],
-                location=request.farm_details.location
-            )
-            
-            # Step 4: Government Schemes
-            available_schemes = await scheme_finder.find_relevant_schemes(
-                farm_details=request.farm_details.dict(),
-                adaptation_goals=request.adaptation_goals
-            )
-            
+            # Use rule-based results
             ai_data = {
                 "climate_analysis": climate_analysis,
                 "crop_recommendations": crop_recommendations,
