@@ -1,12 +1,22 @@
-# Climate Adaptation System
+# 🤖 Generative Resilience Agent (GRA)
 
-AI-Powered Climate Resilient Agriculture Planning for Farmers
-
-## 🚀 Quick Deploy
+**AI-Powered Climate Adaptation & Agricultural Intelligence Platform**
 
 [![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https://github.com/shreyash0216/gra-prototype)
 
 **Live Demo**: [Coming Soon - Deploy to get your URL]
+
+---
+
+## 🌟 What is GRA?
+
+**Generative Resilience Agent (GRA)** is an advanced AI-powered platform that helps farmers adapt to climate change through:
+- 🤖 **AI Chat Assistant** - Real-time farming advice and guidance
+- 🌡️ **Climate Risk Analysis** - Location-specific climate assessment
+- 🌾 **Smart Crop Recommendations** - AI-driven crop selection
+- 📈 **Market Intelligence** - Price trends and selling strategies
+- 🏛️ **Government Scheme Finder** - Automated subsidy matching
+- 🗺️ **Visual Farm Planning** - SVG-based farm layout generation
 
 ## Overview
 
