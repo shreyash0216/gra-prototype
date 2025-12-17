@@ -1,0 +1,16 @@
+crop_name,water_requirement_mm,suitable_soil,season,duration_days,expected_yield_quintal_per_hectare,market_price_inr_per_quintal
+Rice,1200,Alluvial,Kharif,120,45,2500
+Wheat,450,Alluvial,Rabi,120,35,2200
+Cotton,800,Black Soil,Kharif,180,15,6000
+Sugarcane,2000,Black Soil,Annual,365,800,350
+Soybean,500,Black Soil,Kharif,100,20,4500
+Maize,600,Alluvial,Kharif,90,55,2000
+Jowar,400,Red Soil,Kharif,110,25,2800
+Bajra,350,Sandy,Kharif,75,20,3000
+Groundnut,500,Sandy,Kharif,120,25,5500
+Pigeon Pea,650,Red Soil,Kharif,180,15,6500
+Chickpea,300,Black Soil,Rabi,120,18,5000
+Sunflower,400,Red Soil,Rabi,90,12,6000
+Onion,600,Alluvial,Rabi,120,300,1500
+Tomato,800,Red Soil,Rabi,90,400,2000
+Potato,500,Alluvial,Rabi,90,250,1800

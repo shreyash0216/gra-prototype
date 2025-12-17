@@ -1,0 +1,6 @@
+soil_type,water_retention,suitable_crops,ph_range,characteristics,common_regions
+Black Soil,High,"Cotton, Soybean, Sugarcane, Chickpea",6.5-8.5,"Rich in clay, high water retention, fertile",Maharashtra-Deccan Plateau
+Red Soil,Medium,"Jowar, Pigeon Pea, Sunflower, Tomato",5.5-7.0,"Iron oxide rich, well-drained, moderate fertility",Karnataka-Tamil Nadu
+Alluvial,High,"Rice, Wheat, Maize, Onion, Potato",6.0-7.5,"Highly fertile, good water retention, nutrient rich",Gangetic Plains-Punjab
+Laterite,Low,"Cashew, Coconut, Spices",4.5-6.5,"Iron and aluminum rich, low fertility, acidic",Kerala-Coastal regions
+Sandy,Low,"Bajra, Groundnut, Watermelon",6.0-7.5,"Well-drained, low water retention, requires irrigation",Rajasthan-Gujarat
