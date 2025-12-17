@@ -1,0 +1,626 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GRA Prototype - Deployed Version</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+        
+        .header {
+            background: #2c3e50;
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+        
+        .header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+        }
+        
+        .header p {
+            opacity: 0.8;
+            font-size: 1.1em;
+        }
+        
+        .deployment-info {
+            background: #3498db;
+            color: white;
+            padding: 15px 30px;
+            text-align: center;
+        }
+        
+        .url-input {
+            background: #f8f9fa;
+            padding: 20px 30px;
+            border-bottom: 1px solid #eee;
+        }
+        
+        .url-input label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #555;
+        }
+        
+        .url-input input {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #ddd;
+            border-radius: 6px;
+            font-size: 14px;
+        }
+        
+        .url-input button {
+            margin-top: 10px;
+            background: #3498db;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 14px;
+        }
+        
+        .main-content {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 0;
+            min-height: 600px;
+        }
+        
+        .query-section, .simulation-section {
+            padding: 30px;
+        }
+        
+        .query-section {
+            border-right: 1px solid #eee;
+        }
+        
+        .section-title {
+            font-size: 1.5em;
+            margin-bottom: 20px;
+            color: #2c3e50;
+            border-bottom: 2px solid #3498db;
+            padding-bottom: 10px;
+        }
+        
+        .input-group {
+            margin-bottom: 20px;
+        }
+        
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #555;
+        }
+        
+        input, textarea, select {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #ddd;
+            border-radius: 6px;
+            font-size: 14px;
+            transition: border-color 0.3s;
+        }
+        
+        input:focus, textarea:focus, select:focus {
+            outline: none;
+            border-color: #3498db;
+        }
+        
+        textarea {
+            resize: vertical;
+            min-height: 100px;
+        }
+        
+        .btn {
+            background: #3498db;
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: 600;
+            transition: background 0.3s;
+            width: 100%;
+        }
+        
+        .btn:hover {
+            background: #2980b9;
+        }
+        
+        .btn:disabled {
+            background: #bdc3c7;
+            cursor: not-allowed;
+        }
+        
+        .btn-secondary {
+            background: #95a5a6;
+        }
+        
+        .btn-secondary:hover {
+            background: #7f8c8d;
+        }
+        
+        .response-area {
+            margin-top: 20px;
+            padding: 20px;
+            background: #f8f9fa;
+            border-radius: 6px;
+            border-left: 4px solid #3498db;
+            min-height: 150px;
+        }
+        
+        .response-area h4 {
+            margin-bottom: 10px;
+            color: #2c3e50;
+        }
+        
+        .loading {
+            display: none;
+            text-align: center;
+            padding: 20px;
+            color: #666;
+        }
+        
+        .status {
+            padding: 10px;
+            border-radius: 4px;
+            margin: 10px 0;
+            font-weight: 600;
+        }
+        
+        .status.success {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+        
+        .status.error {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+        
+        .grid-2 {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+        }
+        
+        @media (max-width: 768px) {
+            .main-content {
+                grid-template-columns: 1fr;
+            }
+            
+            .query-section {
+                border-right: none;
+                border-bottom: 1px solid #eee;
+            }
+            
+            .grid-2 {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>GRA Prototype</h1>
+            <p>Generative Retrieval-Augmented System</p>
+        </div>
+        
+        <div class="deployment-info">
+            <p>🚀 <strong>Deployed Version</strong> - Connect to your Railway backend</p>
+        </div>
+        
+        <div class="url-input">
+            <label for="apiUrl">Railway Backend URL:</label>
+            <input type="url" id="apiUrl" placeholder="https://your-app.railway.app" value="">
+            <button onclick="setApiUrl()">Connect to Backend</button>
+            <div id="connectionStatus"></div>
+        </div>
+        
+        <div class="main-content">
+            <!-- Query Section -->
+            <div class="query-section">
+                <h2 class="section-title">Query Interface</h2>
+                
+                <div class="input-group">
+                    <label for="query">Enter your question:</label>
+                    <textarea id="query" placeholder="Ask anything about the knowledge base..."></textarea>
+                </div>
+                
+                <div class="input-group">
+                    <label for="template">Response Template:</label>
+                    <select id="template">
+                        <option value="default">Default</option>
+                        <option value="analytical">Analytical</option>
+                        <option value="creative">Creative</option>
+                        <option value="technical">Technical</option>
+                        <option value="summarization">Summarization</option>
+                    </select>
+                </div>
+                
+                <div class="input-group">
+                    <label for="context">Additional Context (optional):</label>
+                    <textarea id="context" placeholder="Provide any additional context..."></textarea>
+                </div>
+                
+                <button class="btn" onclick="submitQuery()" id="queryBtn">Submit Query</button>
+                
+                <div class="response-area">
+                    <h4>Response:</h4>
+                    <div id="queryResponse">Connect to your backend and submit a query to see the response here...</div>
+                </div>
+            </div>
+            
+            <!-- Simulation Section -->
+            <div class="simulation-section">
+                <h2 class="section-title">Simulation Center</h2>
+                
+                <div class="input-group">
+                    <label for="scenarioType">Scenario Type:</label>
+                    <select id="scenarioType" onchange="updateScenarioParams()">
+                        <option value="basic_query">Basic Query Test</option>
+                        <option value="stress_test">Stress Test</option>
+                        <option value="context_switching">Context Switching</option>
+                        <option value="knowledge_gap">Knowledge Gap Analysis</option>
+                    </select>
+                </div>
+                
+                <div id="scenarioParams">
+                    <div class="grid-2">
+                        <div class="input-group">
+                            <label for="queryCount">Query Count:</label>
+                            <input type="number" id="queryCount" value="10" min="1" max="100">
+                        </div>
+                        <div class="input-group">
+                            <label for="delay">Delay (seconds):</label>
+                            <input type="number" id="delay" value="0.1" min="0" max="5" step="0.1">
+                        </div>
+                    </div>
+                </div>
+                
+                <button class="btn btn-secondary" onclick="runSimulation()" id="simulationBtn">Run Simulation</button>
+                
+                <div class="response-area">
+                    <h4>Simulation Results:</h4>
+                    <div id="simulationResults">Connect to your backend and run a simulation to see results here...</div>
+                </div>
+                
+                <div class="input-group" style="margin-top: 20px;">
+                    <button class="btn" onclick="loadSampleData()" id="sampleDataBtn">Load Sample Data</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="loading" id="loading">
+        <p>Processing...</p>
+    </div>
+
+    <script>
+        let API_BASE = '';
+        
+        function setApiUrl() {
+            const url = document.getElementById('apiUrl').value.trim();
+            if (!url) {
+                showStatus('Please enter your Railway URL', 'error');
+                return;
+            }
+            
+            API_BASE = url.endsWith('/') ? url.slice(0, -1) : url;
+            
+            // Test connection
+            testConnection();
+        }
+        
+        async function testConnection() {
+            const statusDiv = document.getElementById('connectionStatus');
+            statusDiv.innerHTML = '<div class="status">Testing connection...</div>';
+            
+            try {
+                const response = await fetch(`${API_BASE}/`);
+                const data = await response.json();
+                
+                if (response.ok) {
+                    statusDiv.innerHTML = '<div class="status success">✅ Connected successfully!</div>';
+                    enableButtons();
+                } else {
+                    statusDiv.innerHTML = '<div class="status error">❌ Connection failed</div>';
+                    disableButtons();
+                }
+            } catch (error) {
+                statusDiv.innerHTML = '<div class="status error">❌ Connection error: ' + error.message + '</div>';
+                disableButtons();
+            }
+        }
+        
+        function enableButtons() {
+            document.getElementById('queryBtn').disabled = false;
+            document.getElementById('simulationBtn').disabled = false;
+            document.getElementById('sampleDataBtn').disabled = false;
+        }
+        
+        function disableButtons() {
+            document.getElementById('queryBtn').disabled = true;
+            document.getElementById('simulationBtn').disabled = true;
+            document.getElementById('sampleDataBtn').disabled = true;
+        }
+        
+        async function submitQuery() {
+            if (!API_BASE) {
+                showStatus('Please connect to your backend first', 'error');
+                return;
+            }
+            
+            const query = document.getElementById('query').value;
+            const template = document.getElementById('template').value;
+            const context = document.getElementById('context').value;
+            
+            if (!query.trim()) {
+                alert('Please enter a question');
+                return;
+            }
+            
+            showLoading(true);
+            
+            try {
+                const response = await fetch(`${API_BASE}/query`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        query: query,
+                        context: context || null
+                    })
+                });
+                
+                const data = await response.json();
+                
+                if (response.ok) {
+                    displayQueryResponse(data);
+                } else {
+                    displayError('Query failed: ' + data.detail);
+                }
+            } catch (error) {
+                displayError('Connection error: ' + error.message);
+            }
+            
+            showLoading(false);
+        }
+        
+        async function runSimulation() {
+            if (!API_BASE) {
+                showStatus('Please connect to your backend first', 'error');
+                return;
+            }
+            
+            const scenarioType = document.getElementById('scenarioType').value;
+            const parameters = getScenarioParameters();
+            
+            showLoading(true);
+            
+            try {
+                const response = await fetch(`${API_BASE}/simulate`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        scenario_type: scenarioType,
+                        parameters: parameters
+                    })
+                });
+                
+                const data = await response.json();
+                
+                if (response.ok) {
+                    displaySimulationResults(data.result);
+                } else {
+                    displayError('Simulation failed: ' + data.detail);
+                }
+            } catch (error) {
+                displayError('Connection error: ' + error.message);
+            }
+            
+            showLoading(false);
+        }
+        
+        async function loadSampleData() {
+            if (!API_BASE) {
+                showStatus('Please connect to your backend first', 'error');
+                return;
+            }
+            
+            showLoading(true);
+            
+            try {
+                const response = await fetch(`${API_BASE}/ingest-sample`, {
+                    method: 'POST'
+                });
+                
+                if (response.ok) {
+                    showStatus('Sample data loaded successfully!', 'success');
+                } else {
+                    showStatus('Failed to load sample data', 'error');
+                }
+            } catch (error) {
+                showStatus('Connection error: ' + error.message, 'error');
+            }
+            
+            showLoading(false);
+        }
+        
+        function updateScenarioParams() {
+            const scenarioType = document.getElementById('scenarioType').value;
+            const paramsDiv = document.getElementById('scenarioParams');
+            
+            let html = '';
+            
+            switch (scenarioType) {
+                case 'basic_query':
+                    html = `
+                        <div class="grid-2">
+                            <div class="input-group">
+                                <label for="queryCount">Query Count:</label>
+                                <input type="number" id="queryCount" value="10" min="1" max="100">
+                            </div>
+                            <div class="input-group">
+                                <label for="delay">Delay (seconds):</label>
+                                <input type="number" id="delay" value="0.1" min="0" max="5" step="0.1">
+                            </div>
+                        </div>
+                    `;
+                    break;
+                case 'stress_test':
+                    html = `
+                        <div class="grid-2">
+                            <div class="input-group">
+                                <label for="concurrentUsers">Concurrent Users:</label>
+                                <input type="number" id="concurrentUsers" value="5" min="1" max="20">
+                            </div>
+                            <div class="input-group">
+                                <label for="queriesPerUser">Queries per User:</label>
+                                <input type="number" id="queriesPerUser" value="20" min="1" max="50">
+                            </div>
+                        </div>
+                    `;
+                    break;
+                case 'context_switching':
+                    html = `
+                        <div class="input-group">
+                            <label for="contextSwitches">Context Switches:</label>
+                            <input type="number" id="contextSwitches" value="5" min="1" max="20">
+                        </div>
+                    `;
+                    break;
+                case 'knowledge_gap':
+                    html = `
+                        <div class="grid-2">
+                            <div class="input-group">
+                                <label for="queryCount">Query Count:</label>
+                                <input type="number" id="queryCount" value="15" min="1" max="50">
+                            </div>
+                            <div class="input-group">
+                                <label for="knowledgeCoverage">Knowledge Coverage:</label>
+                                <input type="number" id="knowledgeCoverage" value="0.7" min="0" max="1" step="0.1">
+                            </div>
+                        </div>
+                    `;
+                    break;
+            }
+            
+            paramsDiv.innerHTML = html;
+        }
+        
+        function getScenarioParameters() {
+            const scenarioType = document.getElementById('scenarioType').value;
+            const params = {};
+            
+            switch (scenarioType) {
+                case 'basic_query':
+                    params.query_count = parseInt(document.getElementById('queryCount').value);
+                    params.delay = parseFloat(document.getElementById('delay').value);
+                    break;
+                case 'stress_test':
+                    params.concurrent_users = parseInt(document.getElementById('concurrentUsers').value);
+                    params.queries_per_user = parseInt(document.getElementById('queriesPerUser').value);
+                    break;
+                case 'context_switching':
+                    params.context_switches = parseInt(document.getElementById('contextSwitches').value);
+                    break;
+                case 'knowledge_gap':
+                    params.query_count = parseInt(document.getElementById('queryCount').value);
+                    params.knowledge_coverage = parseFloat(document.getElementById('knowledgeCoverage').value);
+                    break;
+            }
+            
+            return params;
+        }
+        
+        function displayQueryResponse(data) {
+            const responseDiv = document.getElementById('queryResponse');
+            responseDiv.innerHTML = `
+                <div><strong>Response:</strong></div>
+                <p>${data.response}</p>
+                <div style="margin-top: 15px;"><strong>Retrieved Context:</strong></div>
+                <div style="font-size: 0.9em; color: #666;">
+                    ${data.context.length} documents retrieved
+                </div>
+            `;
+        }
+        
+        function displaySimulationResults(results) {
+            const resultsDiv = document.getElementById('simulationResults');
+            
+            let html = `<div><strong>Scenario:</strong> ${results.scenario}</div>`;
+            
+            Object.keys(results).forEach(key => {
+                if (key !== 'scenario' && key !== 'results') {
+                    html += `<div><strong>${key.replace(/_/g, ' ')}:</strong> ${results[key]}</div>`;
+                }
+            });
+            
+            resultsDiv.innerHTML = html;
+        }
+        
+        function displayError(message) {
+            showStatus(message, 'error');
+        }
+        
+        function showStatus(message, type) {
+            const statusDiv = document.createElement('div');
+            statusDiv.className = `status ${type}`;
+            statusDiv.textContent = message;
+            
+            document.body.appendChild(statusDiv);
+            
+            setTimeout(() => {
+                statusDiv.remove();
+            }, 5000);
+        }
+        
+        function showLoading(show) {
+            document.getElementById('loading').style.display = show ? 'block' : 'none';
+        }
+        
+        // Initialize the page
+        updateScenarioParams();
+        disableButtons(); // Disable until connected
+        
+        // Auto-detect common Railway URLs
+        const currentHost = window.location.hostname;
+        if (currentHost.includes('railway.app')) {
+            document.getElementById('apiUrl').value = window.location.origin;
+        }
+    </script>
+</body>
+</html>
