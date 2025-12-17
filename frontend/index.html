@@ -436,6 +436,14 @@
                     }
 
                     const data = await response.json();
+                    
+                    // Show AI status
+                    if (data.ai_powered) {
+                        console.log('✨ Results powered by Gen AI');
+                    } else {
+                        console.log('📊 Results from rule-based analysis');
+                    }
+                    
                     setResults(data.adaptation_plan);
                     
                     // Also fetch nearby farms

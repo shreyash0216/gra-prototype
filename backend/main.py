@@ -14,6 +14,7 @@ from agents.crop_advisor import CropAdvisor
 from agents.market_analyzer import MarketAnalyzer
 from agents.scheme_finder import SchemeFinder
 from utils.svg_generator import SVGGenerator
+from services.gen_ai_service import gen_ai_service
 
 # Create tables
 Base.metadata.create_all(bind=engine)
@@ -66,57 +67,98 @@ async def analyze_climate_adaptation(
     request: ClimateAdaptationRequest,
     db = Depends(get_db)
 ):
-    """Generate comprehensive climate adaptation plan for a farm"""
+    """Generate comprehensive climate adaptation plan for a farm using Gen AI"""
     try:
         crud = ClimateAdaptationCRUD(db)
         
-        # Step 1: Climate Risk Analysis
-        climate_analysis = await climate_analyzer.analyze_risks(
-            location=request.farm_details.location,
-            concerns=request.climate_concerns
-        )
+        # Check if Gen AI is available
+        use_gen_ai = gen_ai_service.is_available()
         
-        # Step 2: Crop Recommendations
-        crop_recommendations = await crop_advisor.recommend_crops(
-            farm_details=request.farm_details.dict(),
-            climate_risks=climate_analysis["risks"]
-        )
+        if use_gen_ai:
+            # Use Gen AI for comprehensive analysis
+            print("🤖 Using Gen AI for analysis...")
+            
+            # Generate AI-powered analysis
+            ai_analysis = await gen_ai_service.generate_climate_analysis(
+                farm_details=request.farm_details.dict(),
+                climate_concerns=request.climate_concerns,
+                adaptation_goals=request.adaptation_goals
+            )
+            
+            # Parse AI response (it should be JSON)
+            try:
+                import json
+                ai_data = json.loads(ai_analysis)
+            except:
+                # If AI doesn't return valid JSON, use structured agents
+                use_gen_ai = False
         
-        # Step 3: Market Analysis
-        market_analysis = await market_analyzer.analyze_market_potential(
-            crops=crop_recommendations["recommended_crops"],
-            location=request.farm_details.location
-        )
+        if not use_gen_ai:
+            # Fallback to rule-based agents
+            print("📊 Using rule-based agents...")
+            
+            # Step 1: Climate Risk Analysis
+            climate_analysis = await climate_analyzer.analyze_risks(
+                location=request.farm_details.location,
+                concerns=request.climate_concerns
+            )
+            
+            # Step 2: Crop Recommendations
+            crop_recommendations = await crop_advisor.recommend_crops(
+                farm_details=request.farm_details.dict(),
+                climate_risks=climate_analysis["risks"]
+            )
+            
+            # Step 3: Market Analysis
+            market_analysis = await market_analyzer.analyze_market_potential(
+                crops=crop_recommendations["recommended_crops"],
+                location=request.farm_details.location
+            )
+            
+            # Step 4: Government Schemes
+            available_schemes = await scheme_finder.find_relevant_schemes(
+                farm_details=request.farm_details.dict(),
+                adaptation_goals=request.adaptation_goals
+            )
+            
+            ai_data = {
+                "climate_analysis": climate_analysis,
+                "crop_recommendations": crop_recommendations,
+                "market_analysis": market_analysis,
+                "government_schemes": available_schemes
+            }
         
-        # Step 4: Government Schemes
-        available_schemes = await scheme_finder.find_relevant_schemes(
-            farm_details=request.farm_details.dict(),
-            adaptation_goals=request.adaptation_goals
-        )
+        # Step 5: Generate Farm Layout (always use SVG generator)
+        recommended_crops = ai_data.get("crop_recommendations", {}).get("recommended_crops", [])
+        if isinstance(recommended_crops, dict):
+            recommended_crops = list(recommended_crops.keys())[:5]
         
-        # Step 5: Generate Farm Layout
         farm_layout = svg_generator.generate_farm_layout(
             farm_size=request.farm_details.farm_size,
-            recommended_crops=crop_recommendations["recommended_crops"],
+            recommended_crops=recommended_crops[:5],
             water_source=request.farm_details.water_source
         )
         
         # Compile comprehensive plan
         adaptation_plan = {
             "farm_id": f"farm_{datetime.now().strftime('%Y%m%d_%H%M%S')}",
-            "climate_analysis": climate_analysis,
-            "crop_recommendations": crop_recommendations,
-            "market_analysis": market_analysis,
-            "government_schemes": available_schemes,
+            "ai_powered": use_gen_ai,
+            "climate_analysis": ai_data.get("climate_analysis", {}),
+            "crop_recommendations": ai_data.get("crop_recommendations", {}),
+            "market_analysis": ai_data.get("market_analysis", {}),
+            "government_schemes": ai_data.get("government_schemes", {}),
             "farm_layout_svg": farm_layout,
-            "implementation_timeline": _generate_timeline(
-                crop_recommendations, climate_analysis
+            "implementation_timeline": ai_data.get("implementation_timeline") or _generate_timeline(
+                ai_data.get("crop_recommendations", {}), 
+                ai_data.get("climate_analysis", {})
             ),
-            "estimated_costs": _calculate_costs(
-                crop_recommendations, available_schemes
+            "estimated_costs": ai_data.get("cost_analysis") or _calculate_costs(
+                ai_data.get("crop_recommendations", {}), 
+                ai_data.get("government_schemes", {})
             ),
             "expected_benefits": _calculate_benefits(
-                crop_recommendations, market_analysis
+                ai_data.get("crop_recommendations", {}), 
+                ai_data.get("market_analysis", {})
             )
         }
         
@@ -129,10 +171,13 @@ async def analyze_climate_adaptation(
         return {
             "success": True,
             "plan_id": saved_plan.id,
-            "adaptation_plan": adaptation_plan
+            "adaptation_plan": adaptation_plan,
+            "ai_powered": use_gen_ai
         }
         
     except Exception as e:
+        import traceback
+        traceback.print_exc()
         raise HTTPException(status_code=500, detail=str(e))
 
 @app.post("/nearby-farms")
@@ -202,17 +247,29 @@ class AIChatRequest(BaseModel):
 
 @app.post("/ai-chat")
 async def ai_chat_assistant(request: AIChatRequest):
-    """AI Chat Assistant for farming queries"""
+    """AI Chat Assistant for farming queries using Gen AI"""
     try:
-        message = request.message.lower()
+        message = request.message
         context = request.context or {}
         
-        # Generate contextual AI response
-        response = _generate_ai_response(message, context)
+        # Try to use Gen AI first
+        if gen_ai_service.is_available():
+            ai_response = await gen_ai_service.generate_chat_response(message, context)
+            if ai_response:
+                return {
+                    "success": True,
+                    "response": ai_response,
+                    "ai_powered": True,
+                    "timestamp": datetime.now().isoformat()
+                }
+        
+        # Fallback to rule-based responses
+        response = _generate_ai_response(message.lower(), context)
         
         return {
             "success": True,
             "response": response,
+            "ai_powered": False,
             "timestamp": datetime.now().isoformat()
         }
     except Exception as e:

@@ -11,12 +11,16 @@
 ## 🌟 What is GRA?
 
 **Generative Resilience Agent (GRA)** is an advanced AI-powered platform that helps farmers adapt to climate change through:
-- 🤖 **AI Chat Assistant** - Real-time farming advice and guidance
-- 🌡️ **Climate Risk Analysis** - Location-specific climate assessment
-- 🌾 **Smart Crop Recommendations** - AI-driven crop selection
-- 📈 **Market Intelligence** - Price trends and selling strategies
+- 🤖 **Gen AI Integration** - Powered by OpenAI GPT or Anthropic Claude for intelligent analysis
+- 💬 **AI Chat Assistant** - Real-time conversational farming advice
+- 🌡️ **Climate Risk Analysis** - AI-driven location-specific assessment
+- 🌾 **Smart Crop Recommendations** - Gen AI-powered crop selection
+- 📈 **Market Intelligence** - AI-analyzed price trends and strategies
 - 🏛️ **Government Scheme Finder** - Automated subsidy matching
 - 🗺️ **Visual Farm Planning** - SVG-based farm layout generation
+
+### 🚀 Gen AI Powered
+GRA uses real generative AI (GPT/Claude) for dynamic, intelligent responses. See [GEN_AI_SETUP.md](GEN_AI_SETUP.md) for configuration.
 
 ## Overview
 
